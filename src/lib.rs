@@ -218,21 +218,16 @@ where
         delay.delay_ms(10);
         sx127x.reset.set_high().map_err(Reset)?;
         delay.delay_ms(10);
-        let version = sx127x.read_register(Register::RegVersion.addr())?;
-        if version == VERSION_CHECK {
-            sx127x.set_mode(RadioMode::Sleep)?;
-            sx127x.set_frequency(frequency)?;
-            sx127x.write_register(Register::RegFifoTxBaseAddr.addr(), 0)?;
-            sx127x.write_register(Register::RegFifoRxBaseAddr.addr(), 0)?;
-            let lna = sx127x.read_register(Register::RegLna.addr())?;
-            sx127x.write_register(Register::RegLna.addr(), lna | 0x03)?;
-            sx127x.write_register(Register::RegModemConfig3.addr(), 0x04)?;
-            sx127x.set_mode(RadioMode::Stdby)?;
-            sx127x.cs.set_high().map_err(CS)?;
-            Ok(sx127x)
-        } else {
-            Err(Error::VersionMismatch(version))
-        }
+        sx127x.set_mode(RadioMode::Sleep)?;
+        sx127x.set_frequency(frequency)?;
+        sx127x.write_register(Register::RegFifoTxBaseAddr.addr(), 0)?;
+        sx127x.write_register(Register::RegFifoRxBaseAddr.addr(), 0)?;
+        let lna = sx127x.read_register(Register::RegLna.addr())?;
+        sx127x.write_register(Register::RegLna.addr(), lna | 0x03)?;
+        sx127x.write_register(Register::RegModemConfig3.addr(), 0x04)?;
+        sx127x.set_mode(RadioMode::Stdby)?;
+        sx127x.cs.set_high().map_err(CS)?;
+        Ok(sx127x)
     }
 
     /// Lets owner of the driver struct to reconfigure the radio.  Takes care of resetting the
